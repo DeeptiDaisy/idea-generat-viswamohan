@@ -1,6 +1,26 @@
 const express = require ("express");
 
+const serverConfig = require("./configs/server.config");
+const mongoose = require("mongoose");
+const dbConfig= require("./configs/db.config");
+
 const app= express();
+
+
+/**
+ * logic to connect to mongodb and create an admin user
+ * need to have mongodb up and running in your local machine
+ */
+mongoose.connect(dbConfig.DB_URL);
+const db = mongoose.connection;
+
+db.on("error", ()=>{
+    console.log("Error while connecting to db");
+});
+
+db.once("open", ()=>{
+    console.log("DB is connected");
+});
 
 app.use(express.json());
 
@@ -16,7 +36,7 @@ function myMiddleware (req, res, next){
 
 require("./routes/idea.routes")(app);
 
-app.listen(8080, ()=>{
-    console.log("Server started");
+app.listen(serverConfig.PORT, ()=>{
+    console.log(`Server started at ${serverConfig.PORT} `);
 })
 
